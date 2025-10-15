@@ -1,20 +1,23 @@
 package com.Atividadeprogramada.AtividadeProgramada.service;
 
-import com.Atividadeprogramada.AtividadeProgramada.entity.Professor;
-import com.Atividadeprogramada.AtividadeProgramada.repository.ProfessorRepository;
-
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
-@Service
+import org.springframework.stereotype.Service;
 
+import com.Atividadeprogramada.AtividadeProgramada.entity.Professor;
+import com.Atividadeprogramada.AtividadeProgramada.repository.ProfessorRepository;
+
+
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
 public class ProfessorService {
 
     private final ProfessorRepository professorRepository;
 
-   
+   //comenatario teste
 
     //listar professor
     public List<Professor> listarProfessor() {

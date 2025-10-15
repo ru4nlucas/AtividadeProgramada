@@ -1,4 +1,4 @@
-package com.Atividadeprogramada.AtividadeProgramada.service;
+package com.Atividadeprogramada.AtividadeProgramada;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
