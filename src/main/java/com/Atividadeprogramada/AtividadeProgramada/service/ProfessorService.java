@@ -17,15 +17,13 @@ public class ProfessorService {
 
     private final ProfessorRepository professorRepository;
 
-   //comenatario teste
-
     //listar professor
     public List<Professor> listarProfessor() {
         return professorRepository.findAll();
     }
-
-    public Professor buscarIdProfessor(int id) {
-        return professorRepository.findById(id).get();
+    //buscar professor pelo id
+    public Optional<Professor> buscarIdProfessor(int id) {
+        return professorRepository.findById(id);
     }
 
     public Professor salvarProfessor(Professor professor) {

@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+
+
 @Entity
 @Table(name = "tb_professor")
 @Getter
@@ -20,9 +23,6 @@ public class Professor {
     private String nome;
     private String email;
     private String telefone;
-
-
-
 
 
 }
