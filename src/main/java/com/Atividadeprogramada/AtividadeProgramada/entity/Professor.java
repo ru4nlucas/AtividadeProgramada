@@ -1,16 +1,16 @@
 package com.Atividadeprogramada.AtividadeProgramada.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.*;
 
 
 @Entity
 @Table(name = "tb_professor")
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Professor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
     private String nome;
     private String email;
