@@ -1,8 +1,10 @@
 package com.atividadeProgramada.AtividadeProgramada2.controller;
 
+import lombok.AllArgsConstructor;
+
 @Controller
-@RestController
 @RequestMapping("/atividade")
+@AllArgsConstructor
 public class AtividadeController {
 
     
