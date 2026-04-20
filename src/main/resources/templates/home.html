@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <style>
+        body {
+            background: #0d0f14;
+            color: #e8eaf0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #13161e;
+            border: 1px solid #252a38;
+            border-radius: 12px;
+            padding: 40px;
+            width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #7c6af7;
+            margin-bottom: 12px;
+        }
+
+        .info {
+            color: #5a6178;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .role {
+            display: inline-block;
+            background: #1a1e28;
+            border: 1px solid #252a38;
+            border-radius: 6px;
+            color: #3ecf8e;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            margin-bottom: 28px;
+            text-transform: uppercase;
+        }
+
+        a {
+            display: inline-block;
+            background: #3a1a1a;
+            border: 1px solid #ff5e5e;
+            border-radius: 8px;
+            color: #ff5e5e;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 24px;
+            text-decoration: none;
+        }
+
+        a:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Bem-vindo!</h2>
+
+        <!-- th:text exibe o valor da variável passada pelo controller -->
+        <p class="info" th:text="'Logado como: ' + ${usuarioLogado.email}"></p>
+        <span class="role" th:text="${usuarioLogado.role}"></span>
+
+        <br/>
+        <!-- Link para logout -->
+        <a href="/logout">Sair</a>
+    </div>
+</body>
+</html>

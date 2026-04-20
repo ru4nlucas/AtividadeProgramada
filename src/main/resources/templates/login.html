@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body {
+            background: #0d0f14;
+            color: #e8eaf0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #13161e;
+            border: 1px solid #252a38;
+            border-radius: 12px;
+            padding: 40px;
+            width: 360px;
+        }
+
+        h2 {
+            margin-bottom: 24px;
+            font-size: 22px;
+            color: #7c6af7;
+        }
+         h4{
+            margin-top: 18px;
+            font-size: 13px;
+            color: #5a6178;
+            text-align: center;
+            
+        }
+        
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: #5a6178;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            background: #1a1e28;
+            border: 1px solid #252a38;
+            border-radius: 8px;
+            color: #e8eaf0;
+            font-size: 14px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #7c6af7;
+        }
+
+        button {
+            width: 100%;
+            background: #7c6af7;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .erro {
+            background: #3a1a1a;
+            border: 1px solid #ff5e5e;
+            border-radius: 8px;
+            color: #ff5e5e;
+            font-size: 13px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Entrar</h2>
+
+        <!-- Mostra mensagem de erro se o login falhar -->
+        <div class="erro" th:if="${erro}" th:text="${erro}"></div>
+
+        <!-- Formulário que envia POST para /login -->
+        <form action="/login" method="post">
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="seu@email.com" required />
+
+            <label>Senha</label>
+            <input type="password" name="senha" placeholder="••••••" required />
+
+            <button type="submit">Entrar</button> 
+        </form>
+        <h4><a href="/cadastro">Cadastre-seaqui</a></h4>
+    </div>
+</body>
+</html>

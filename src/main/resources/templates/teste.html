@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0d0f14;
+            --surface: #13161e;
+            --surface2: #1a1e28;
+            --border: #252a38;
+            --get: #3ecf8e;
+            --post: #4a9eff;
+            --put: #f5a623;
+            --delete: #ff5e5e;
+            --text: #e8eaf0;
+            --muted: #5a6178;
+            --accent: #7c6af7;
+            --mono: 'JetBrains Mono', monospace;
+            --sans: 'Syne', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--mono);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        header {
+            padding: 28px 40px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--surface);
+        }
+
+        .logo {
+            font-family: var(--sans);
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* MAIN LAYOUT */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            flex: 1;
+            height: calc(100vh - 73px);
+        }
+
+        /* LEFT PANEL - REQUEST */
+        .panel-left {
+            padding: 32px 40px;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        /* METHOD + URL ROW */
+        .request-bar {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .method-select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 0 14px;
+            cursor: pointer;
+            outline: none;
+            min-width: 100px;
+            transition: border-color 0.2s;
+        }
+
+        .method-select:focus { border-color: var(--accent); }
+        .method-select option { background: var(--surface2); }
+
+        .url-input {
+            flex: 1;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            padding: 12px 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .url-input:focus { border-color: var(--accent); }
+        .url-input::placeholder { color: var(--muted); }
+
+        .send-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .send-btn:hover { opacity: 0.85; }
+        .send-btn:active { transform: scale(0.97); }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            user-select: none;
+        }
+
+        .tab.active {
+            color: var(--text);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* HEADERS TABLE */
+        .headers-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .headers-table th {
+            text-align: left;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .headers-table td { padding: 6px 0; }
+
+        .header-input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 12px;
+            padding: 7px 10px;
+            width: 100%;
+            outline: none;
+        }
+
+        .header-input:focus { border-color: var(--accent); }
+        .header-input::placeholder { color: var(--muted); }
+
+        .remove-row {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0 6px;
+            transition: color 0.2s;
+        }
+
+        .remove-row:hover { color: var(--delete); }
+
+        .add-row-btn {
+            background: none;
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 12px;
+            padding: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .add-row-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* BODY EDITOR */
+        .body-editor {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 13px;
+            padding: 14px;
+            width: 100%;
+            min-height: 200px;
+            resize: vertical;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .body-editor:focus { border-color: var(--accent); }
+        .body-editor::placeholder { color: var(--muted); }
+
+        /* QUICK BODY BUTTONS */
+        .quick-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .quick-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 5px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover { border-color: var(--accent); color: var(--text); }
+
+        /* RIGHT PANEL - RESPONSE */
+        .panel-right {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .response-header {
+            padding: 24px 40px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--surface);
+        }
+
+        .response-title {
+            font-family: var(--sans);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .status-badge {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .status-badge.show { display: inline-block; }
+        .status-badge.ok { background: rgba(62,207,142,0.15); color: var(--get); }
+        .status-badge.err { background: rgba(255,94,94,0.15); color: var(--delete); }
+        .status-badge.warn { background: rgba(245,166,35,0.15); color: var(--put); }
+
+        .time-badge {
+            font-size: 11px;
+            color: var(--muted);
+            display: none;
+        }
+
+        .time-badge.show { display: inline-block; }
+
+        .response-body {
+            flex: 1;
+            padding: 24px 40px;
+            overflow-y: auto;
+        }
+
+        .response-pre {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 200px;
+            color: var(--text);
+            position: relative;
+        }
+
+        .response-placeholder {
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+            padding: 60px 0;
+            line-height: 2;
+        }
+
+        /* METHOD COLORS */
+        .method-get { color: var(--get); }
+        .method-post { color: var(--post); }
+        .method-put { color: var(--put); }
+        .method-delete { color: var(--delete); }
+
+        /* LOADING */
+        .loading-bar {
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--get));
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 2px;
+        }
+
+        .loading-bar.active {
+            animation: loading 1.2s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; margin-left: 0; }
+            50% { width: 70%; margin-left: 15%; }
+            100% { width: 0%; margin-left: 100%; }
+        }
+
+        /* JSON SYNTAX HIGHLIGHT */
+        .json-string { color: #a8d8a8; }
+        .json-number { color: #f5a623; }
+        .json-boolean { color: #4a9eff; }
+        .json-null { color: #ff5e5e; }
+        .json-key { color: #c792ea; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* METHOD INDICATOR */
+        #method-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+            background: var(--accent);
+            transition: background 0.2s;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 11px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">API<span>.</span>tester</div>
+    <div class="badge">Spring Boot</div>
+</header>
+
+<div class="container">
+
+    <!-- LEFT: REQUEST -->
+    <div class="panel-left">
+        <div>
+            <div class="section-label">Requisição</div>
+            <div class="request-bar">
+                <select class="method-select" id="method" onchange="updateMethod()">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <input class="url-input" id="url" type="text"
+                    placeholder="http://localhost:8080/api/..." />
+                <button class="send-btn" id="send-btn" onclick="sendRequest()">Enviar ▶</button>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('headers')">Headers</div>
+                <div class="tab" onclick="switchTab('body')">Body</div>
+                <div class="tab" onclick="switchTab('auth')">Auth</div>
+            </div>
+
+            <!-- HEADERS TAB -->
+            <div class="tab-content active" id="tab-headers" style="padding-top: 16px;">
+                <table class="headers-table" id="headers-table">
+                    <thead>
+                        <tr>
+                            <th style="width:44%">Chave</th>
+                            <th style="width:8px"></th>
+                            <th style="width:44%">Valor</th>
+                            <th style="width:32px"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="headers-body">
+                        <tr>
+                            <td><input class="header-input" placeholder="Content-Type" value="Content-Type"></td>
+                            <td></td>
+                            <td><input class="header-input" placeholder="application/json" value="application/json"></td>
+                            <td><button class="remove-row" onclick="removeRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="add-row-btn" onclick="addHeaderRow()">+ Adicionar header</button>
+            </div>
+
+            <!-- BODY TAB -->
+            <div class="tab-content" id="tab-body" style="padding-top: 16px;">
+                <div class="quick-btns">
+                    <button class="quick-btn" onclick="setBody('{}')">JSON vazio</button>
+                    <button class="quick-btn" onclick="setBody('{\n  \"nome\": \"\",\n  \"email\": \"\"\n}')">Usuário</button>
+                    <button class="quick-btn" onclick="setBody('{\n  \"titulo\": \"\",\n  \"descricao\": \"\"\n}')">Atividade</button>
+                    <button class="quick-btn" onclick="formatBody()">Formatar JSON</button>
+                    <button class="quick-btn" onclick="clearBody()">Limpar</button>
+                </div>
+                <textarea class="body-editor" id="body" placeholder='{\n  "chave": "valor"\n}'></textarea>
+            </div>
+
+            <!-- AUTH TAB -->
+            <div class="tab-content" id="tab-auth" style="padding-top: 16px;">
+                <div class="section-label" style="margin-bottom:12px;">Bearer Token / Session</div>
+                <div style="display:flex; gap:8px; margin-bottom: 16px;">
+                    <input class="header-input" id="auth-token" placeholder="Bearer eyJhbGciOi..." style="flex:1">
+                    <button class="quick-btn" onclick="applyAuth()">Aplicar</button>
+                </div>
+                <div class="section-label" style="margin-bottom:12px;">Basic Auth</div>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <input class="header-input" id="basic-user" placeholder="usuário" style="flex:1">
+                    <input class="header-input" id="basic-pass" placeholder="senha" type="password" style="flex:1">
+                    <button class="quick-btn" onclick="applyBasicAuth()">Aplicar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: RESPONSE -->
+    <div class="panel-right">
+        <div class="response-header">
+            <div class="response-title">Resposta</div>
+            <span class="status-badge" id="status-badge"></span>
+            <span class="time-badge" id="time-badge"></span>
+        </div>
+        <div class="loading-bar" id="loading-bar"></div>
+        <div class="response-body">
+            <div class="response-pre" id="response-pre">
+                <div class="response-placeholder" id="response-placeholder">
+                    Nenhuma requisição enviada ainda.<br>
+                    Configure e clique em <strong>Enviar</strong>.
+                </div>
+                <button class="copy-btn" id="copy-btn" style="display:none" onclick="copyResponse()">Copiar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── TAB SWITCHING ──
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach((t, i) => {
+            const names = ['headers','body','auth'];
+            t.classList.toggle('active', names[i] === name);
+        });
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    // ── METHOD COLORS ──
+    const methodColors = { GET: '#3ecf8e', POST: '#4a9eff', PUT: '#f5a623', DELETE: '#ff5e5e' };
+    function updateMethod() {
+        const m = document.getElementById('method').value;
+        document.getElementById('method').style.color = methodColors[m];
+    }
+    updateMethod();
+
+    // ── HEADERS ──
+    function addHeaderRow() {
+        const tbody = document.getElementById('headers-body');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input class="header-input" placeholder="Chave"></td>
+            <td></td>
+            <td><input class="header-input" placeholder="Valor"></td>
+            <td><button class="remove-row" onclick="removeRow(this)">×</button></td>`;
+        tbody.appendChild(tr);
+    }
+
+    function removeRow(btn) {
+        btn.closest('tr').remove();
+    }
+
+    function getHeaders() {
+        const rows = document.querySelectorAll('#headers-body tr');
+        const headers = {};
+        rows.forEach(r => {
+            const inputs = r.querySelectorAll('input');
+            const k = inputs[0].value.trim();
+            const v = inputs[1].value.trim();
+            if (k && v) headers[k] = v;
+        });
+        return headers;
+    }
+
+    // ── BODY ──
+    function setBody(val) {
+        document.getElementById('body').value = val;
+        switchTab('body');
+    }
+
+    function clearBody() { document.getElementById('body').value = ''; }
+
+    function formatBody() {
+        try {
+            const v = document.getElementById('body').value;
+            document.getElementById('body').value = JSON.stringify(JSON.parse(v), null, 2);
+        } catch { alert('JSON inválido'); }
+    }
+
+    // ── AUTH ──
+    function applyAuth() {
+        const token = document.getElementById('auth-token').value.trim();
+        if (!token) return;
+        const val = token.startsWith('Bearer ') ? token : 'Bearer ' + token;
+        addOrUpdateHeader('Authorization', val);
+        switchTab('headers');
+    }
+
+    function applyBasicAuth() {
+        const u = document.getElementById('basic-user').value;
+        const p = document.getElementById('basic-pass').value;
+        if (!u || !p) return;
+        const encoded = btoa(u + ':' + p);
+        addOrUpdateHeader('Authorization', 'Basic ' + encoded);
+        switchTab('headers');
+    }
+
+    function addOrUpdateHeader(key, value) {
+        const rows = document.querySelectorAll('#headers-body tr');
+        for (const r of rows) {
+            const inputs = r.querySelectorAll('input');
+            if (inputs[0].value.trim().toLowerCase() === key.toLowerCase()) {
+                inputs[1].value = value;
+                return;
+            }
+        }
+        const tbody = document.getElementById('headers-body');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input class="header-input" value="${key}"></td>
+            <td></td>
+            <td><input class="header-input" value="${value}"></td>
+            <td><button class="remove-row" onclick="removeRow(this)">×</button></td>`;
+        tbody.appendChild(tr);
+    }
+
+    // ── SEND REQUEST ──
+    async function sendRequest() {
+        const method = document.getElementById('method').value;
+        const url = document.getElementById('url').value.trim();
+        if (!url) { alert('Informe a URL'); return; }
+
+        const btn = document.getElementById('send-btn');
+        const loadingBar = document.getElementById('loading-bar');
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+        loadingBar.classList.add('active');
+
+        document.getElementById('status-badge').classList.remove('show');
+        document.getElementById('time-badge').classList.remove('show');
+        document.getElementById('copy-btn').style.display = 'none';
+        document.getElementById('response-placeholder').style.display = 'none';
+        document.getElementById('response-pre').innerHTML = '<div style="color:var(--muted);padding:20px 0">Aguardando resposta...</div>';
+
+        const headers = getHeaders();
+        const bodyVal = document.getElementById('body').value.trim();
+
+        const options = { method, headers };
+        if (['POST','PUT','PATCH'].includes(method) && bodyVal) {
+            options.body = bodyVal;
+        }
+
+        const t0 = performance.now();
+        try {
+            const res = await fetch(url, options);
+            const elapsed = Math.round(performance.now() - t0);
+            const text = await res.text();
+
+            // STATUS BADGE
+            const badge = document.getElementById('status-badge');
+            badge.textContent = res.status + ' ' + res.statusText;
+            badge.className = 'status-badge show ' +
+                (res.ok ? 'ok' : res.status >= 400 ? 'err' : 'warn');
+
+            document.getElementById('time-badge').textContent = elapsed + 'ms';
+            document.getElementById('time-badge').classList.add('show');
+
+            // RENDER RESPONSE
+            let html = '';
+            try {
+                const parsed = JSON.parse(text);
+                html = syntaxHighlight(JSON.stringify(parsed, null, 2));
+            } catch {
+                html = escapeHtml(text);
+            }
+
+            document.getElementById('response-pre').innerHTML =
+                html + '<button class="copy-btn" id="copy-btn" onclick="copyResponse()">Copiar</button>';
+            document.getElementById('response-pre')._raw = text;
+
+        } catch (err) {
+            const badge = document.getElementById('status-badge');
+            badge.textContent = 'ERRO';
+            badge.className = 'status-badge show err';
+            document.getElementById('response-pre').innerHTML =
+                `<span style="color:var(--delete)">${err.message}</span>\n\nVerifique se:\n• O servidor está rodando\n• A URL está correta\n• CORS está habilitado`;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Enviar ▶';
+            loadingBar.classList.remove('active');
+        }
+    }
+
+    function copyResponse() {
+        const pre = document.getElementById('response-pre');
+        const text = pre._raw || pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('copy-btn');
+            if (btn) { btn.textContent = 'Copiado!'; setTimeout(() => btn.textContent = 'Copiar', 1500); }
+        });
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function syntaxHighlight(json) {
+        json = escapeHtml(json);
+        return json.replace(
+            /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+            match => {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    cls = /:$/.test(match) ? 'json-key' : 'json-string';
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return `<span class="${cls}">${match}</span>`;
+            }
+        );
+    }
+
+    // Enter to send
+    document.getElementById('url').addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendRequest();
+    });
+</script>
+</body>
+</html>
