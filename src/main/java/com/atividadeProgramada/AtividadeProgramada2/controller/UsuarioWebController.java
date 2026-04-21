@@ -20,7 +20,7 @@ public class UsuarioWebController {
     @GetMapping //funçao para listar usuarios
     public  String listar(HttpSession session, Model model){
         Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
-        //testa se o usuario que esta logado ou se nao foi logado é adm, para poder
+        //testa se o usuario que esta logado é adm, para poder
         //listar usuarios cadastrados
         if(logado == null || logado.getRole() != Role.ADMIN){
             return "redirect:/home";
