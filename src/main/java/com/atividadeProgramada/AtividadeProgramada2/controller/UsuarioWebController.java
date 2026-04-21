@@ -19,25 +19,25 @@ public class UsuarioWebController {
 
     @GetMapping //funçao para listar usuarios
     public  String listar(HttpSession session, Model model){
-        Usuario logado = (Usuario) session.getAttribute("usuariologado");
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
         //testa se o usuario que esta logado ou se nao foi logado é adm, para poder
         //listar usuarios cadastrados
         if(logado == null || logado.getRole() != Role.ADMIN){
-            return "redirect:/home.html";
+            return "redirect:/home";
         }
         List<Usuario> usuarios = usuarioService.listarUsuarios();
         model.addAttribute("usuarios", usuarios);
-        model.addAttribute("usuariologado", logado);
+        model.addAttribute("usuarioLogado", logado);
         return "usuarios/listar";
     }
 
     //cria novo usuario
     @GetMapping("/novo")
     public String formularioCriar(HttpSession session, Model model){
-        Usuario logado = (Usuario) session.getAttribute("usuariologado");
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
 
         if(logado == null || logado.getRole() != Role.ADMIN){
-            return "redirect:/home.html";
+            return "redirect:/home";
         }
         model.addAttribute("usuario", new Usuario());
         return "usuarios/formulario";
@@ -45,20 +45,20 @@ public class UsuarioWebController {
 
     @PostMapping("/salvar")
     public String salvar(@ModelAttribute Usuario usuario, HttpSession session){
-        Usuario logado = (Usuario) session.getAttribute("usuariologado");
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
 
         if(logado == null || logado.getRole() != Role.ADMIN){
-            return "redirect:/home.html";
+            return "redirect:/home";
         }
         usuarioService.salvar(usuario);
         return "redirect:/usuarios";
     }
     @GetMapping("/editar/{id}")
-    public String formularoiEditar(@PathVariable String id, HttpSession session, Model model){
-        Usuario logado = (Usuario) session.getAttribute("usuariologado");
+    public String formularioEditar(@PathVariable String id, HttpSession session, Model model){
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
 
         if(logado == null || logado.getRole() !=Role.ADMIN){
-            return "redirect:/home.html";
+            return "redirect:/home";
         }
         Usuario usuario = usuarioService.buscarPorId(id)
                 .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
@@ -68,15 +68,25 @@ public class UsuarioWebController {
 
     }
 
-    @PostMapping
-    public String atuallizar(@ModelAttribute Usuario usuario, HttpSession session){
-        Usuario logado = (Usuario) session.getAttribute("usuariologado");
+    @PostMapping("/atualizar")
+    public String atualizar(@ModelAttribute Usuario usuario, HttpSession session){
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
 
         if(logado == null || logado.getRole() != Role.ADMIN){
-            return "redirect:/home.html";
+            return "redirect:/home";
         }
         usuarioService.atualizar(usuario);
         return "redirect:/usuarios";
 
+    }
+    @GetMapping("/excluir/{id}")
+    public String excluir(@PathVariable String id, HttpSession session){
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
+
+        if(logado == null || logado.getRole() != Role.ADMIN){
+            return "redirect:/home";
+        }
+        usuarioService.excluir(id);
+        return "redirect:/usuarios";
     }
 }
