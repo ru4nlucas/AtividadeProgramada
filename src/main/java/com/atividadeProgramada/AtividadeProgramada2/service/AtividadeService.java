@@ -1,5 +1,6 @@
 package com.atividadeProgramada.AtividadeProgramada2.service;
 
+import com.atividadeProgramada.AtividadeProgramada2.entity.Usuario;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +21,18 @@ public class AtividadeService {
         return atividadeRepository.findAll();
     }
 
+    //trecho para procurar atividade relacionada a usuario
+    // Busca só as atividades do usuário logado (USER)
+    public List<Atividade> listarPorUsuario(Usuario usuario) {
+        return atividadeRepository.findByUsuario(usuario);
+    }
+    //trecho para procurar atividade relacionada a usuario
+    // Busca uma atividade pelo ID (usado na edição)
+    public Atividade buscarPorId(String id) {
+        return atividadeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+    }
+
     public Atividade salvar(Atividade atividade) {
         Atividade validAtividade = Objects.requireNonNull(atividade, "atividade e obrigatoria");
         return atividadeRepository.save(validAtividade);
@@ -38,6 +51,7 @@ public class AtividadeService {
                     a.setData(validAtividade.getData());
                     a.setHora(validAtividade.getHora());
                     a.setDescricao(validAtividade.getDescricao());
+                    a.setUsuario(validAtividade.getUsuario()); //para atribuir a atividade ao usuairo
                     return atividadeRepository.save(a);
                 })
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));

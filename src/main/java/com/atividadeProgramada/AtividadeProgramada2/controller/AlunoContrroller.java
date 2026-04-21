@@ -1,9 +1,9 @@
 package com.atividadeProgramada.AtividadeProgramada2.controller;
 
 import com.atividadeProgramada.AtividadeProgramada2.entity.Aluno;
-import com.atividadeProgramada.AtividadeProgramada2.repository.AlunoRepository;
 import com.atividadeProgramada.AtividadeProgramada2.service.AlunoService;
 import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

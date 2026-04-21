@@ -1,5 +1,6 @@
 package com.atividadeProgramada.AtividadeProgramada2.controller;
 
+import com.atividadeProgramada.AtividadeProgramada2.service.UsuarioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,4 +10,8 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/atividade")
 @AllArgsConstructor
 public class AtividadeController {
+    private final UsuarioService usuarioService;
+
+
+
 }
