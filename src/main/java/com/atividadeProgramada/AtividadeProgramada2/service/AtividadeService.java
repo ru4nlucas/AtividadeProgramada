@@ -55,5 +55,11 @@ public class AtividadeService {
                     return atividadeRepository.save(a);
                 })
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+    }
+    public void concluir(String id) {
+       Atividade atividade = buscarPorId(id);
+       atividade.setConcluida(true);
+       atividadeRepository.save(atividade);
     }
 }

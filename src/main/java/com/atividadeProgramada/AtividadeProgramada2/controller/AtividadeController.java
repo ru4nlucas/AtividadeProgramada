@@ -135,4 +135,11 @@ public class AtividadeController {
         atividadeService.deletar(nome);
         return "redirect:/atividades";
     }
+    @PostMapping("/concluir/{id}")
+    public String concluir(@PathVariable String id, HttpSession session){
+        Usuario logado = (Usuario) session.getAttribute("usuarioLogado");
+        if(logado == null)return "redirect:/login";
+        atividadeService.concluir(id);
+        return "redirect:/atividades";
+    }
 }

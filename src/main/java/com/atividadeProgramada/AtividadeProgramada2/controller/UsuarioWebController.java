@@ -2,6 +2,7 @@ package com.atividadeProgramada.AtividadeProgramada2.controller;
 
 import com.atividadeProgramada.AtividadeProgramada2.entity.Role;
 import com.atividadeProgramada.AtividadeProgramada2.entity.Usuario;
+import com.atividadeProgramada.AtividadeProgramada2.service.AtividadeService;
 import com.atividadeProgramada.AtividadeProgramada2.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
@@ -89,4 +90,5 @@ public class UsuarioWebController {
         usuarioService.excluir(id);
         return "redirect:/usuarios";
     }
+
 }
