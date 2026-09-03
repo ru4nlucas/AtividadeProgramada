@@ -35,6 +35,12 @@ public class AtividadeService {
 
     public Atividade salvar(Atividade atividade) {
         Atividade validAtividade = Objects.requireNonNull(atividade, "atividade e obrigatoria");
+        if (validAtividade.getHora() != null && !validAtividade.getHora().isEmpty()) {
+            int hora = Integer.parseInt(validAtividade.getHora().split(":")[0]);
+            if (hora >= 6 && hora < 12) validAtividade.setPeriodo("MANHA");
+            else if (hora >= 12 && hora < 18) validAtividade.setPeriodo("TARDE");
+            else validAtividade.setPeriodo("NOITE");
+        }
         return atividadeRepository.save(validAtividade);
     }
     public void deletar(String nome) {
@@ -52,6 +58,14 @@ public class AtividadeService {
                     a.setHora(validAtividade.getHora());
                     a.setDescricao(validAtividade.getDescricao());
                     a.setUsuario(validAtividade.getUsuario()); //para atribuir a atividade ao usuairo
+                    a.setPeriodo(validAtividade.getPeriodo()); //atualizar periodo
+
+                    if(a.getHora() != null && !a.getHora().isEmpty()) {
+                        int hora = Integer.parseInt(a.getHora().split(":")[0]);
+                        if (hora >= 6 && hora < 12) a.setPeriodo("MANHA");
+                        else if (hora >= 12 && hora < 18) a.setPeriodo("TARDE");
+                        else a.setPeriodo("NOITE");
+                    }
                     return atividadeRepository.save(a);
                 })
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));

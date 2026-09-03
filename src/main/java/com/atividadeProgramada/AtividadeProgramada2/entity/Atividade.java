@@ -22,6 +22,7 @@ public class Atividade {
     private String hora;
     private String descricao;
     private  boolean concluida = false;
+    private String periodo; // MANHA, TARDE, NOITE
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
